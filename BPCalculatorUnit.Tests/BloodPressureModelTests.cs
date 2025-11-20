@@ -10,7 +10,7 @@ namespace BPCalculatorUnit.Tests
 {
     public class BloodPressureModelTests
     {
-        private BloodPressureModel CreatePageModel(TestSession session = null)
+        private BloodPressureModel CreatePageModel(TestSession? session = null)
         {
             var httpContext = new DefaultHttpContext();
             httpContext.Session = session ?? new TestSession();
