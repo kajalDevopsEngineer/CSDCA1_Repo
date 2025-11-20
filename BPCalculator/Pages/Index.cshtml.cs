@@ -9,8 +9,8 @@ namespace BPCalculator.Pages
     public class BloodPressureModel : PageModel
     {
         [BindProperty]                              // bound on POST
-        public BloodPressure BP { get; set; }
-        public string TrendMessage { get; private set; }
+        public BloodPressure BP { get; set; } = new BloodPressure();
+        public string TrendMessage { get; set; } = string.Empty;
 
         // setup initial data
         public void OnGet()
@@ -31,36 +31,36 @@ namespace BPCalculator.Pages
                 return Page();
             }
 
-             var nameKey = BP.Name?.Trim().ToLower() ?? string.Empty;
-             string sysKey = $"LastSystolic_{nameKey}";
-             string diaKey = $"LastDiastolic_{nameKey}";
+            var nameKey = BP.Name?.Trim().ToLower() ?? string.Empty;
+            string sysKey = $"LastSystolic_{nameKey}";
+            string diaKey = $"LastDiastolic_{nameKey}";
 
-             int? lastSys = HttpContext.Session.GetInt32(sysKey);
-             int? lastDia = HttpContext.Session.GetInt32(diaKey);
+            int? lastSys = HttpContext.Session.GetInt32(sysKey);
+            int? lastDia = HttpContext.Session.GetInt32(diaKey);
 
-             if (lastSys.HasValue && lastDia.HasValue)
-             {
-                 int oldTotal = lastSys.Value + lastDia.Value;
-                 int newTotal = BP.Systolic + BP.Diastolic;
+            if (lastSys.HasValue && lastDia.HasValue)
+            {
+                int oldTotal = lastSys.Value + lastDia.Value;
+                int newTotal = BP.Systolic + BP.Diastolic;
 
                 if (newTotal > oldTotal)
-                 TrendMessage = $"{BP.Name}'s blood pressure has increased since last time.";
+                    TrendMessage = $"{BP.Name}'s blood pressure has increased since last time.";
                 else if (newTotal < oldTotal)
-                 TrendMessage = $"{BP.Name}'s blood pressure has decreased since last time.";
+                    TrendMessage = $"{BP.Name}'s blood pressure has decreased since last time.";
                 else
-                 TrendMessage = $"{BP.Name}'s blood pressure is unchanged since last time.";
-             }
+                    TrendMessage = $"{BP.Name}'s blood pressure is unchanged since last time.";
+            }
             else
             {
-            // 👇 NEW: first time we see this name
+                // 👇 NEW: first time we see this name
                 TrendMessage = $"This is the first reading we have stored for {BP.Name}.";
             }
 
-             // Save current reading for this person
+            // Save current reading for this person
             HttpContext.Session.SetInt32(sysKey, BP.Systolic);
             HttpContext.Session.SetInt32(diaKey, BP.Diastolic);
 
-        return Page();
-     }
+            return Page();
+        }
     }
 }
