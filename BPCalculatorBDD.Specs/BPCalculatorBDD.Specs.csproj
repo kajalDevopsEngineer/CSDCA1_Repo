@@ -4,10 +4,16 @@
     <!-- Use a stable test target framework -->
     <TargetFramework>net9.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <AnalysisLevel>latest</AnalysisLevel> 
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- Test SDK so dotnet test can run this project -->
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
 
     <!-- xUnit test framework -->
