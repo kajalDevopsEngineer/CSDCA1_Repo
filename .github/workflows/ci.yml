@@ -57,7 +57,7 @@ jobs:
         run: dotnet list package --vulnerable || exit 0
 
       - name: Snyk - Scan for vulnerabilities
-        uses: snyk/actions/dotnet@v1
+        uses: snyk/actions/dotnet@<commit-sha>
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
