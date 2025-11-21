@@ -19,6 +19,21 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+        shell: pwsh
+
+      - name: SonarCloud - Begin analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: >
+          dotnet-sonarscanner begin
+          /k:"kajalDevopsEngineer_CSDCA1_Repo"
+          /o:"kajaldevopsengineer"
+          /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          /d:sonar.cs.vscoveragexml.reportsPaths="**/coverage.cobertura.xml"
+        shell: pwsh
+
       - name: Restore dependencies
         run: dotnet restore
 
@@ -28,10 +43,14 @@ jobs:
       - name: Run unit + BDD tests with coverage
         run: dotnet test --collect:"XPlat Code Coverage" --no-build
 
-      # Optional: enforce formatting/code style (will fail if format incorrect)
+      - name: SonarCloud - End analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        shell: pwsh
+
       - name: Check code formatting
         run: dotnet format --verify-no-changes
 
-      # Security: dependency vulnerability check
       - name: Check for vulnerable NuGet packages
         run: dotnet list package --vulnerable || exit 0
