@@ -26,13 +26,13 @@ jobs:
       - name: SonarCloud - Begin analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: >
-          dotnet-sonarscanner begin
-          /k:"kajalDevopsEngineer_CSDCA1_Repo"
-          /o:"kajaldevopsengineer"
-          /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-          /d:sonar.cs.vscoveragexml.reportsPaths="**/coverage.cobertura.xml"
         shell: pwsh
+        run: |
+          dotnet-sonarscanner begin `
+            /k:"kajalDevopsEngineer_CSDCA1_Repo" `
+            /o:"kajaldevopsengineer" `
+            /d:sonar.login="$env:SONAR_TOKEN" `
+            /d:sonar.cs.vscoveragexml.reportsPaths="**/coverage.cobertura.xml"
 
       - name: Restore dependencies
         run: dotnet restore
@@ -46,8 +46,9 @@ jobs:
       - name: SonarCloud - End analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
         shell: pwsh
+        run: dotnet-sonarscanner end /d:sonar.login="$env:SONAR_TOKEN"
+
 
       - name: Check code formatting
         run: dotnet format --verify-no-changes
