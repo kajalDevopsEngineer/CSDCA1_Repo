@@ -87,8 +87,39 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
           package: ./publish
   
+  e2e-tests:
+    needs: deploy-qa
+    runs-on: windows-latest
+    environment: qa
+
+    defaults:
+      run:
+        working-directory: e2e-tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+        # if you didn't commit package-lock.json yet, use:
+        # run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests against QA
+        env:
+          BASE_URL: https://bpcalc-qa.azurewebsites.net/
+        run: npx playwright test --reporter=line
+
   deploy-prod:
-    needs: deploy-qa        # only run after QA deploy succeeds (later we can also add tests here)
+    needs: e2e-tests        # only run after QA deploy succeeds (later we can also add tests here)
     runs-on: windows-latest
     environment:
       name: production
