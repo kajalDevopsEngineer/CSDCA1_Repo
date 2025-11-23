@@ -33,9 +33,8 @@ jobs:
             /o:"kajaldevopsengineer" `
             /d:sonar.login="$env:SONAR_TOKEN" `
             /d:sonar.cs.vscoveragexml.reportsPaths="**/coverage.cobertura.xml" `
-            /d:sonar.exclusions="e2e-tests/**" `
-            /d:sonar.coverage.exclusions="e2e-tests/**"
-
+            /d:sonar.exclusions="e2e-tests/**,perf-tests/**" `
+            /d:sonar.coverage.exclusions="e2e-tests/**,perf-tests/**"
 
       - name: Restore dependencies
         run: dotnet restore
@@ -90,8 +89,24 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
           package: ./publish
   
-  e2e-tests:
+  perf-tests:
     needs: deploy-qa
+    runs-on: ubuntu-latest   # k6 action uses Linux runners
+    environment: qa
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run k6 load test against QA
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: perf-tests/bp-load-test.js
+        env:
+          BASE_URL: https://bpcalc-qa-g8gyh3h7aedcbkem.uksouth-01.azurewebsites.net/
+
+  e2e-tests:
+    needs: perf-tests
     runs-on: windows-latest
     environment: qa
 
