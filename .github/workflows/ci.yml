@@ -49,7 +49,6 @@ jobs:
         shell: pwsh
         run: dotnet-sonarscanner end /d:sonar.login="$env:SONAR_TOKEN"
 
-
       - name: Check code formatting
         run: dotnet format --verify-no-changes
 
@@ -64,3 +63,26 @@ jobs:
         with:
           args: --severity-threshold=medium
 
+  deploy-qa:
+    needs: build-test
+    runs-on: windows-latest
+    environment: qa
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish app
+        run: dotnet publish BPCalculator/BPCalculator.csproj -c Release -o ./publish
+
+      - name: Deploy to Azure Web App (QA)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'bpcalc-qa'   # your QA app name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
+          package: ./publish
