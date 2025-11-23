@@ -32,7 +32,10 @@ jobs:
             /k:"kajalDevopsEngineer_CSDCA1_Repo" `
             /o:"kajaldevopsengineer" `
             /d:sonar.login="$env:SONAR_TOKEN" `
-            /d:sonar.cs.vscoveragexml.reportsPaths="**/coverage.cobertura.xml"
+            /d:sonar.cs.vscoveragexml.reportsPaths="**/coverage.cobertura.xml" `
+            /d:sonar.exclusions="e2e-tests/**" `
+            /d:sonar.coverage.exclusions="e2e-tests/**"
+
 
       - name: Restore dependencies
         run: dotnet restore
@@ -115,7 +118,7 @@ jobs:
 
       - name: Run Playwright tests against QA
         env:
-          BASE_URL: https://bpcalc-qa.azurewebsites.net/
+          BASE_URL: https://bpcalc-qa-g8gyh3h7aedcbkem.uksouth-01.azurewebsites.net/
         run: npx playwright test --reporter=line
 
   deploy-prod:
@@ -123,7 +126,7 @@ jobs:
     runs-on: windows-latest
     environment:
       name: production
-      url: https://bpcalc-prod.azurewebsites.net/
+      url: https://bpcalc-prod-gyd2fzcma3g4fygr.uksouth-01.azurewebsites.net/
 
     steps:
       - name: Checkout repository
