@@ -45,15 +45,13 @@ namespace BPCalculator
                 }
 
                 // Pre-high blood pressure if systolic in [120,139] or diastolic in [80,89]
-                if ((Systolic >= 120 && Systolic <= 139) ||
-                   (Diastolic >= 80 && Diastolic <= 89))
+                if ((Systolic >= 120 && Systolic <= 139) || (Diastolic >= 80 && Diastolic <= 89))
                 {
                     return BPCategory.PreHigh;
                 }
 
                 // Ideal blood pressure if systolic in [90,119] and diastolic in [60,79]
-                if (Systolic >= 90 && Systolic <= 119 &&
-                      Diastolic >= 60 && Diastolic <= 79)
+                if (Systolic >= 90 && Systolic <= 119 && Diastolic >= 60 && Diastolic <= 79)
                 {
                     return BPCategory.Ideal;
                 }
