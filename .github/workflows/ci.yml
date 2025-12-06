@@ -89,8 +89,25 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
           package: ./publish
   
-  perf-tests:
+  zap-scan:
     needs: deploy-qa
+    runs-on: ubuntu-latest
+    environment: qa
+    continue-on-error: true   # ✅ So ZAP warnings won't block your pipeline
+
+    steps:
+      - name: OWASP ZAP Baseline Scan against QA
+        uses: zaproxy/action-baseline@v0.13.0
+        with:
+          target: 'https://bpcalc-qa-g8gyh3h7aedcbkem.uksouth-01.azurewebsites.net/'
+          allow_issue_writing: false        # ✅ Fixes your failure
+          cmd_options: '-a -r zap-report.html'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  
+  perf-tests:
+    needs: zap-scan
     runs-on: ubuntu-latest   # k6 action uses Linux runners
     environment: qa
 
