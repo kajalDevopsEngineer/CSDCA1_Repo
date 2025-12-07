@@ -12,13 +12,13 @@ namespace BPCalculator.Pages
     public class BloodPressureModel : PageModel
     {
 
-        private readonly TelemetryClient _telemetry;
+        private readonly TelemetryClient? _telemetry;
 
         [BindProperty]                              // bound on POST
         public BloodPressure BP { get; set; } = new BloodPressure();
         public string TrendMessage { get; set; } = string.Empty;
 
-        public BloodPressureModel(TelemetryClient telemetry = null)
+        public BloodPressureModel(TelemetryClient? telemetry = null)
         {
             _telemetry = telemetry;
         }
