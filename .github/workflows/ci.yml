@@ -90,21 +90,21 @@ jobs:
           package: ./publish
   
   zap-scan:
-  needs: deploy-qa
-  runs-on: ubuntu-latest
-  environment: qa
+    needs: deploy-qa
+    runs-on: ubuntu-latest
+    environment: qa
 
-  steps:
-    - name: OWASP ZAP Baseline Scan against QA
-      uses: zaproxy/action-baseline@v0.13.0
-      continue-on-error: true          # ✅ Even if ZAP fails, the job will be marked as success
-      with:
-        target: 'https://bpcalc-qa-g8gyh3h7aedcbkem.uksouth-01.azurewebsites.net/'
-        allow_issue_writing: false      # ✅ no GitHub issues
-        cmd_options: '-a'               # active/passive scan, no report file
-        artifact_name: ''               # ✅ disables artifact upload (no HTML report)
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: OWASP ZAP Baseline Scan against QA
+        uses: zaproxy/action-baseline@v0.13.0
+        continue-on-error: true          
+        with:
+          target: 'https://bpcalc-qa-g8gyh3h7aedcbkem.uksouth-01.azurewebsites.net/'
+          allow_issue_writing: false      
+          cmd_options: '-a'               
+          artifact_name: ''               
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
   perf-tests:
