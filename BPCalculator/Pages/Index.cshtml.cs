@@ -18,7 +18,7 @@ namespace BPCalculator.Pages
         public BloodPressure BP { get; set; } = new BloodPressure();
         public string TrendMessage { get; set; } = string.Empty;
 
-        public BloodPressureModel(TelemetryClient telemetry)
+        public BloodPressureModel(TelemetryClient telemetry = null)
         {
             _telemetry = telemetry;
         }
@@ -79,7 +79,7 @@ namespace BPCalculator.Pages
                 ["Category"] = BP.Category.ToString()
             };
 
-            _telemetry.TrackEvent("BloodPressureCalculated", calcProps);
+            _telemetry?.TrackEvent("BloodPressureCalculated", calcProps);
 
             // ✅ Telemetry for your new feature (trend message)
             if (!string.IsNullOrWhiteSpace(TrendMessage))
@@ -90,7 +90,7 @@ namespace BPCalculator.Pages
                     ["TrendMessage"] = TrendMessage
                 };
 
-                _telemetry.TrackTrace("BloodPressureTrend", SeverityLevel.Information, trendProps);
+                _telemetry?.TrackTrace("BloodPressureTrend", SeverityLevel.Information, trendProps);
             }
 
             return Page();
