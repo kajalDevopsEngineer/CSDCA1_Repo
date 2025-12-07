@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Http;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using System.Collections.Generic;
 
 // page model
 
@@ -8,9 +11,17 @@ namespace BPCalculator.Pages
 {
     public class BloodPressureModel : PageModel
     {
+
+        private readonly TelemetryClient _telemetry;
+
         [BindProperty]                              // bound on POST
         public BloodPressure BP { get; set; } = new BloodPressure();
         public string TrendMessage { get; set; } = string.Empty;
+
+        public BloodPressureModel(TelemetryClient telemetry)
+        {
+            _telemetry = telemetry;
+        }
 
         // setup initial data
         public void OnGet()
@@ -59,6 +70,28 @@ namespace BPCalculator.Pages
             // Save current reading for this person
             HttpContext.Session.SetInt32(sysKey, BP.Systolic);
             HttpContext.Session.SetInt32(diaKey, BP.Diastolic);
+
+            var calcProps = new Dictionary<string, string>
+            {
+                ["Name"] = BP.Name ?? string.Empty,
+                ["Systolic"] = BP.Systolic.ToString(),
+                ["Diastolic"] = BP.Diastolic.ToString(),
+                ["Category"] = BP.Category.ToString()
+            };
+
+            _telemetry.TrackEvent("BloodPressureCalculated", calcProps);
+
+            // ✅ Telemetry for your new feature (trend message)
+            if (!string.IsNullOrWhiteSpace(TrendMessage))
+            {
+                var trendProps = new Dictionary<string, string>
+                {
+                    ["Name"] = BP.Name ?? string.Empty,
+                    ["TrendMessage"] = TrendMessage
+                };
+
+                _telemetry.TrackTrace("BloodPressureTrend", SeverityLevel.Information, trendProps);
+            }
 
             return Page();
         }
