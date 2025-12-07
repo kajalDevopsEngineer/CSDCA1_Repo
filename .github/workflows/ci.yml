@@ -101,7 +101,7 @@ jobs:
         with:
           target: 'https://bpcalc-qa-g8gyh3h7aedcbkem.uksouth-01.azurewebsites.net/'
           allow_issue_writing: false        # ✅ Fixes your failure
-          cmd_options: '-a -r zap-report.html'
+          cmd_options: '-a -r report_html.html'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
