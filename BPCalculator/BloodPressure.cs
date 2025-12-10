@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace BPCalculator
 {
-    // BP categories
+    // BP categories - Adding this comment to check coverage
     public enum BPCategory
     {
         [Display(Name = "Low Blood Pressure")] Low,
