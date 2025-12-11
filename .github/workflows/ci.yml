@@ -32,9 +32,10 @@ jobs:
             /k:"kajalDevopsEngineer_CSDCA1_Repo" `
             /o:"kajaldevopsengineer" `
             /d:sonar.login="$env:SONAR_TOKEN" `
-            /d:sonar.cs.cobertura.reportsPaths="**/coverage.cobertura.xml" `
+            /d:sonar.cs.cobertura.reportsPaths="**/TestResults/coverage.xml" `
             /d:sonar.exclusions="e2e-tests/**,perf-tests/**" `
             /d:sonar.coverage.exclusions="e2e-tests/**,perf-tests/**"
+
 
       - name: Restore dependencies
         run: dotnet restore
@@ -43,7 +44,14 @@ jobs:
         run: dotnet build --configuration Debug --no-restore
 
       - name: Run unit + BDD tests with coverage
-        run: dotnet test --collect:"XPlat Code Coverage" --no-build
+        run: |
+          dotnet test BPCalculatorUnit.Tests/BPCalculatorUnit.Tests.csproj `
+            /p:CollectCoverage=true `
+            /p:CoverletOutput=TestResults/coverage.xml `
+            /p:CoverletOutputFormat=cobertura
+
+          dotnet test BPCalculatorBDD.Specs/BPCalculatorBDD.Specs.csproj
+
 
       - name: SonarCloud - End analysis
         env:
