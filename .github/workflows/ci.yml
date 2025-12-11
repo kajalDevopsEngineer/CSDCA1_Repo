@@ -17,7 +17,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Install SonarScanner for .NET
         run: dotnet tool install --global dotnet-sonarscanner
@@ -32,9 +32,17 @@ jobs:
             /k:"kajalDevopsEngineer_CSDCA1_Repo" `
             /o:"kajaldevopsengineer" `
             /d:sonar.login="$env:SONAR_TOKEN" `
-            /d:sonar.cs.cobertura.reportsPaths="**/TestResults/coverage.xml" `
+            /d:sonar.cs.cobertura.reportsPaths="BPCalculatorUnit.Tests/TestResults/coverage.xml" `
             /d:sonar.exclusions="e2e-tests/**,perf-tests/**" `
             /d:sonar.coverage.exclusions="e2e-tests/**,perf-tests/**"
+
+      - name: Show coverage files (debug)
+        shell: pwsh
+        run: |
+          Write-Host "Current directory:"
+          Get-Location
+          Write-Host "All coverage.xml files under repo:"
+          Get-ChildItem -Recurse -Filter coverage.xml
 
 
       - name: Restore dependencies
@@ -85,7 +93,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Publish app
         run: dotnet publish BPCalculator/BPCalculator.csproj -c Release -o ./publish
@@ -110,7 +118,7 @@ jobs:
           target: 'https://bpcalc-qa-g8gyh3h7aedcbkem.uksouth-01.azurewebsites.net/'
           allow_issue_writing: false      
           cmd_options: '-a'               
-          artifact_name: ''               
+          artifact_name: 'zap-scan-report'               
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -176,7 +184,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Publish app
         run: dotnet publish BPCalculator/BPCalculator.csproj -c Release -o ./publish
