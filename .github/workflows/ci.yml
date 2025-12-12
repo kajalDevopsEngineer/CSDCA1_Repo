@@ -170,8 +170,32 @@ jobs:
           BASE_URL: https://bpcalc-qa-g8gyh3h7aedcbkem.uksouth-01.azurewebsites.net/
         run: npx playwright test --reporter=line
 
+  deploy-canary:
+    needs: e2e-tests
+    runs-on: windows-latest
+    environment: canary   # GitHub environment you just created
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'   # same as your other jobs
+
+      - name: Publish app
+        run: dotnet publish BPCalculator/BPCalculator.csproj -c Release -o ./publish
+
+      - name: Deploy to Azure Web App (Canary)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'bpcalc-canary'   # NEW app
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_CANARY }}
+          package: ./publish
+
   deploy-prod:
-    needs: e2e-tests        # only run after QA deploy succeeds (later we can also add tests here)
+    needs: deploy-canary        # only run after QA deploy succeeds (later we can also add tests here)
     runs-on: windows-latest
     environment:
       name: production
